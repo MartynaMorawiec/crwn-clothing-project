@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-// import { createSearchParams } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { UserContext } from "../../contexts/user.context";
 import {
   signInWithGooglePopup,
   createUserDocumentFromAuth,
@@ -18,6 +18,8 @@ const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
 
+  const { setCurrentUser } = useContext(UserContext);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormFields({ ...formFields, [name]: value });
@@ -35,11 +37,12 @@ const SignInForm = () => {
     event.preventDefault();
 
     try {
-      const response = await signInAuthUserWithEmailAndPassword(
+      const { user } = await signInAuthUserWithEmailAndPassword(
         email,
         password
       );
-      console.log(response);
+      setCurrentUser(user);
+
       resetFormFields();
     } catch (error) {
       switch (error.code) {
@@ -52,9 +55,6 @@ const SignInForm = () => {
         default:
           console.log(error);
       }
-      // if (error.code === "auth/wrong-password") {
-      //   alert("incorrect password for email");
-      // }
     }
   };
 
